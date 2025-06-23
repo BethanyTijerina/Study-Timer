@@ -5,25 +5,34 @@ import time
 #print("1 second passed!")
 class PomodoroTimer:
     def work_time(self):
+        print("Work Time!!")
+        self.countdown(1) # to run a 25 minute timer. change to 25 later
+        print("You did it! It's time for a break!")
          #run a countdown for 25 munutes (for now)
          #call self.countdown(25)
          #notify user that work session is stating
-         pass
          
     def break_time(self):
+        print("Let's take a 5 minute break.")
+        self.countdown(1) #to run a 5 minute timer. change to 5 later
+        print("Break is over!! Let's get back to work!")
         #run a countdown for 5 minutes
         #call self.countdown(5)
         #notify user that break time is starting
-        pass
+        
     def start_session(self):
-        while self.break_time:#I just put something there to stop the red but this will be the loop like start the timer yes or no
-            #ask the user if they want to start or quit
-            #if yes:
-            #  call self.work_time()
-            #  call self.break_time()
-            #repeat until user says no
-            while self.work_time:#this will run the 25 minites and the 5 minutes
-                pass
+        start = input("Would you like to start a Pomodoro study session?(yes/no): ").lower()
+        while start == "yes":#I just put something there to stop the red but this will be the loop like start the timer yes or no
+            self.work_time() #study cycle 25 minutes of working
+            self.break_time() # study cycle 5 minutes of break
+            start = input("Would you like to continue the Pomodoro study session?(yes/no): ").lower()
+        print("Great work! See you next time!")
+        #ask the user if they want to start or quit
+        #if yes:
+        #  call self.work_time()
+        #  call self.break_time()
+        #repeat until user says no
+        
     def countdown(self, minutes):
         seconds = minutes * 60
         while seconds > 0: #once the timer hits 0 the loop ends and the timer is done.
