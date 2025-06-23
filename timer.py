@@ -39,9 +39,10 @@ class PomodoroTimer:
             min_left = seconds //60 #get the minutes
             sec_left = seconds % 60 #get the remaining seconds
             #example: 145 seconds will be 2 minutes and 25 seconds
-            print(f"{min_left:02d}:{sec_left:02d}") # :02d means show 2 digits example: 5 will be 05.
+            print(f"{min_left:02d}:{sec_left:02d}", end="\r", flush=True) # :02d means show 2 digits example: 5 will be 05. end="\r", flush=True will overwrite the same line every second.
             time.sleep(1) # helps slow the timer. wait 1 second before it continues.
             seconds -= 1 #decreases the counter.
+        print(" " * 20, end="\r") #clears the countdown
         print("Time's up!!!")
         #thid will handal conversions and do MM:SS format
         #converts minutes to seconds.
