@@ -22,7 +22,7 @@ class PomodoroTimer:
         
     def start_session(self):
         start = input("Would you like to start a Pomodoro study session?(yes/no): ").lower()
-        while start == "yes":#I just put something there to stop the red but this will be the loop like start the timer yes or no
+        while start == "yes":#this will be the loop like start the timer yes or no
             self.work_time() #study cycle 25 minutes of working
             self.break_time() # study cycle 5 minutes of break
             start = input("Would you like to continue the Pomodoro study session?(yes/no): ").lower()
