@@ -1,0 +1,9 @@
+# Ignore compiled bytecode
+__pycache__/
+*.pyc
+
+# Ignore VS Code settings (optional)
+.vscode/
+
+# Ignore virtual environments (if you make one later)
+venv/
