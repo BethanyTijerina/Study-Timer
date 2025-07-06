@@ -75,8 +75,11 @@ class PomodoroTimer:
         self.update_display() #update the screen
 def launch_timer():
     task_name = input("Hey! What are we working on today? ")
-    task = Task(task_name)
+    due=input('When is it due? ')
+    task = Task(task_name,due)
 
+    print(f"Let's get started on: {task.task_name} Due Date: {task.due_date}") #AM: Added due date string variable mm/dd/yyyy
+    
     root = tk.Tk()  # Create the main tkinter window
     program = PomodoroTimer(root, task)  # Creates an instance (object) of the Timer class
     root.mainloop() # Keeps output window display and running
