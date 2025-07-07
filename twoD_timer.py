@@ -8,17 +8,36 @@ class PomodoroTimer:
         self.task = task # this will link to task object
 
         #Creating the name and size of the pop up window
-        display.title("Study Timer")
+        display.title("Pomodoro Alarm Clock")
         display.geometry("400x300")
+        display.configure(bg="#FFFAF0") #like a light cream off white background
 
         #Initializing timer variables to zero
         self.running = False
         self.seconds_left = 60 # the countdown starting at 25 min, change to 25*60 later
         self.break_mode = False # to track if you're on break or working
         
+        #DESIGN: creating a clock like frame to simulate a alarm clock
+        self.clock_frame = tk.Frame(display, bg="#282c34", bd=10, relief="ridge")
+        self.clock_frame.pack(pady=40)
+        self.top_decor_frame = tk.Frame(display)
+        self.top_decor_frame.pack(side="top", pady=5)
+        
+        self.light1 = tk.Label(self.top_decor_frame, text="🔴", font=("Arial", 14), bg="lightgrey", relief="raised", bd=2, padx=6, pady=3)
+        self.light2 = tk.Label(self.top_decor_frame, text="🔵", font=("Arial", 14), bg="lightgrey", relief="raised", bd=2, padx=6, pady=3)
+        self.light3 = tk.Label(self.top_decor_frame, text="🟢", font=("Arial", 14), bg="lightgrey", relief="raised", bd=2, padx=6, pady=3)
+        
+        self.light1.pack(side="left", padx=4)
+        self.light2.pack(side="left", padx=4)
+        self.light3.pack(side="left", padx=4)
+        
         #Creating text of the timer numbers and the start and stop buttons with the use of tkinter
-        self.time_label = tk.Label(display, text="1:00", font=("Arial", 100)) #"tk.label" is a tkinter widget that displays the text; ".pack()"" is used for Tkinter to know where and how to put your widgets. 
-        self.time_label.pack(pady=10) #Adds the time_label widget to the window and puts some space (10 pixels) above and below it so it doesn’t look cramped
+        self.time_label = tk.Label(self.clock_frame, text="1:00", font=("Courier",48, "bold"), fg="#39FF14", bg="#282c34", width=10) #"tk.label" is a tkinter widget that displays the text; ".pack()"" is used for Tkinter to know where and how to put your widgets. 
+        #self.time_label.pack(pady=10) #Adds the time_label widget to the window and puts some space (10 pixels) above and below it so it doesn’t look cramped
+        self.time_label.pack()
+        
+        self.status_label = tk.Label(display, text="Ready to Work!", font=("Comic Sans MS", 14), bg="#FFFAF0")
+        self.status_label.pack(pady=10)
 
         self.start_button = tk.Button(display, text="Start", command=self.start) #"tk.Button" is a widget in the tkinter library that creates a clickable button in your GUI.
         self.stop_button = tk.Button(display, text="Stop", command=self.stop) #"command=self.start" tells the button what function to run when it is clicked, in this case it is the "start" function
@@ -59,8 +78,6 @@ class PomodoroTimer:
             #Equation to update time, using time.time function (Displays the current time) minus the time the user pressed "start" 
             #self.elapsed_time = time.time() - self.start_time #self.elapsed_time stores the time that has passed while time.time() - self.start_time counts how many seconds have passed
 
-        #total_seconds = int(self.elapsed_time) #Initializing the current time to int seconds variable
-
         #returns the quotientand remainder of the hours, minutes, and seconds
     def start(self):
         if not self.running:
@@ -76,9 +93,17 @@ class PomodoroTimer:
 def launch_timer():
     task_name = input("Hey! What are we working on today? ")
     due=input('When is it due? ')
-    task = Task(task_name,due)
+    
+    while True:
+        try:
+            goal = int(input("How many Pomodoro sections for this task? "))
+            break
+        except ValueError:
+            print("Please enter a valid number.")
+            
+    task = Task(task_name,due,goal)
 
-    print(f"Let's get started on: {task.task_name} Due Date: {task.due_date}") #AM: Added due date string variable mm/dd/yyyy
+    print(f"Let's get started on: {task.task_name} Due Date: {task.due_date} Weekly Goal: {task.weekly_goal}") #AM: Added due date string variable mm/dd/yyyy
     
     root = tk.Tk()  # Create the main tkinter window
     program = PomodoroTimer(root, task)  # Creates an instance (object) of the Timer class
