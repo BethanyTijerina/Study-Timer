@@ -1,6 +1,9 @@
 import tkinter as tk #tkinter is used to create the pop up window for the timer
+from tkinter import messagebox #creates popup windows for when time is up
 import time  #time used for time functions
 from task import Task
+import winsound #creates a unique sound for the pop up window
+
 
 class PomodoroTimer: 
     def __init__(self, display, task):
@@ -32,7 +35,7 @@ class PomodoroTimer:
         self.light3.pack(side="left", padx=4)
         
         #Creating text of the timer numbers and the start and stop buttons with the use of tkinter
-        self.time_label = tk.Label(self.clock_frame, text="1:00", font=("Courier",48, "bold"), fg="#39FF14", bg="#282c34", width=10) #"tk.label" is a tkinter widget that displays the text; ".pack()"" is used for Tkinter to know where and how to put your widgets. 
+        self.time_label = tk.Label(self.clock_frame, text="1:00", font=("Courier",48, "bold"), fg="#39FF14", bg="#282c34")#, width=10) #"tk.label" is a tkinter widget that displays the text; ".pack()"" is used for Tkinter to know where and how to put your widgets. 
         #self.time_label.pack(pady=10) #Adds the time_label widget to the window and puts some space (10 pixels) above and below it so it doesn’t look cramped
         self.time_label.pack()
         
@@ -65,7 +68,13 @@ class PomodoroTimer:
                 if not self.break_mode:
                     self.task.new_task() # increments count for task
                     print(f"Completed 1 Pomodoro for {self.task.task_name}")
-                    self.time_label.config(text="Break Time!")
+                    self.time_label.config(text="Break Time!", font=("Courier", 38, "bold"))
+                    self.status_label.config(text="Break Time!")
+                    self.display.lift()
+                    self.display.attributes("-topmost", True)
+                    self.display.after_idle(self.display.attributes, "-topmost", False)
+                    winsound.PlaySound("SystemExclamation", winsound.SND_ALIAS)
+                    messagebox.showinfo("Break Time!", "Take a 1-minute break and relax!",parent=self.display)
                     self.break_mode = True
                     self.seconds_left = 60  # starts the break timer, change to 5*60 later
                     self.running = True
@@ -73,7 +82,13 @@ class PomodoroTimer:
                 else: # return to work
                     self.break_mode = False
                     self.seconds_left = 60 # will reset work time, change to 25*60 later
-                    self.time_label.config(text="Back to Work!")
+                    self.time_label.config(text="Back to Work!", font=("Courier", 32, "bold"))
+                    self.status_label.config(text="Ready to Work!")
+                    self.display.lift()
+                    self.display.attributes("-topmost", True)
+                    self.display.after_idle(self.display.attributes, "-topmost", False)
+                    winsound.PlaySound("SystemExclamation", winsound.SND_ALIAS)
+                    messagebox.showinfo("Back to Work!", "Break’s over! Time to focus again.",parent=self.display)
                     ####
             #Equation to update time, using time.time function (Displays the current time) minus the time the user pressed "start" 
             #self.elapsed_time = time.time() - self.start_time #self.elapsed_time stores the time that has passed while time.time() - self.start_time counts how many seconds have passed
