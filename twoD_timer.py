@@ -132,5 +132,8 @@ def launch_timer():
     program = PomodoroTimer(root, task)  # Creates an instance (object) of the Timer class
     root.mainloop() # Keeps output window display and running
     print(f"\nYou completed {task.task_amount} Pomodoro sessions for {task.task_name}")
+    if task.goal_reached()==True:
+        print("\nYou Completed Your Weekly Goal! Awesome!")
+    else: print(f"\n You Have {task.weekly_goal-task.task_amount} sessions left for {task.task_name}!")
 if __name__ == "__main__":
     launch_timer()
