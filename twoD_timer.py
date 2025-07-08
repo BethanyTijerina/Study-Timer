@@ -10,6 +10,14 @@ class PomodoroTimer:
         self.display = display
         self.task = task # this will link to task object
 
+        # Get the screen width to calculate top right position 
+        screen_width = display.winfo_screenwidth()
+        window_width = 400 
+        x = screen_width - window_width
+        y = 0  # top edge
+        display.geometry(f"+{x}+{y}")
+        display.attributes('-topmost', 1) # will keep window in front of everything!
+
         #Creating the name and size of the pop up window
         display.title("Pomodoro Alarm Clock")
         display.geometry("400x300")
@@ -17,27 +25,27 @@ class PomodoroTimer:
 
         #Initializing timer variables to zero
         self.running = False
-        self.seconds_left = 60 # the countdown starting at 25 min, change to 25*60 later
+        self.seconds_left = 25*60 # the countdown starting at 25 min, change to 25*60 later
         self.break_mode = False # to track if you're on break or working
         
         #DESIGN: creating a clock like frame to simulate a alarm clock
         self.clock_frame = tk.Frame(display, bg="#282c34", bd=10, relief="ridge")
         self.clock_frame.pack(pady=40)
-        self.top_decor_frame = tk.Frame(display)
-        self.top_decor_frame.pack(side="top", pady=5)
+        self.top_decor_frame = tk.Frame(self.clock_frame, bg="#282c34")
+        self.top_decor_frame.place(relx=0.5, y=-3, anchor="s")
         
         self.light1 = tk.Label(self.top_decor_frame, text="🔴", font=("Arial", 14), bg="lightgrey", relief="raised", bd=2, padx=6, pady=3)
         self.light2 = tk.Label(self.top_decor_frame, text="🔵", font=("Arial", 14), bg="lightgrey", relief="raised", bd=2, padx=6, pady=3)
         self.light3 = tk.Label(self.top_decor_frame, text="🟢", font=("Arial", 14), bg="lightgrey", relief="raised", bd=2, padx=6, pady=3)
         
+        #Placing on the left side of the pop up window
         self.light1.pack(side="left", padx=4)
         self.light2.pack(side="left", padx=4)
         self.light3.pack(side="left", padx=4)
         
         #Creating text of the timer numbers and the start and stop buttons with the use of tkinter
-        self.time_label = tk.Label(self.clock_frame, text="1:00", font=("Courier",48, "bold"), fg="#39FF14", bg="#282c34")#, width=10) #"tk.label" is a tkinter widget that displays the text; ".pack()"" is used for Tkinter to know where and how to put your widgets. 
-        #self.time_label.pack(pady=10) #Adds the time_label widget to the window and puts some space (10 pixels) above and below it so it doesn’t look cramped
-        self.time_label.pack()
+        self.time_label = tk.Label(self.clock_frame, text="25:00", font=("Courier",48, "bold"), fg="#39FF14", bg="#282c34") #"tk.label" is a tkinter widget that displays the text
+        self.time_label.pack()  # ".pack()"" is used for Tkinter to know where and how to put your widgets. 
         
         self.status_label = tk.Label(display, text="Ready to Work!", font=("Comic Sans MS", 14), bg="#FFFAF0")
         self.status_label.pack(pady=10)
@@ -47,7 +55,7 @@ class PomodoroTimer:
         self.reset_button = tk.Button(display, text="Reset", command=self.reset) # will reset the timer button
         
         #Placing the buttons on the left side of the pop up window
-        self.start_button.pack(side="left", padx=10, pady=5)
+        self.start_button.pack(side="left", padx=10)
         self.stop_button.pack(side="left", padx=10)
         self.reset_button.pack(side="left", padx=10)
 
@@ -74,14 +82,14 @@ class PomodoroTimer:
                     self.display.attributes("-topmost", True)
                     self.display.after_idle(self.display.attributes, "-topmost", False)
                     winsound.PlaySound("SystemExclamation", winsound.SND_ALIAS)
-                    messagebox.showinfo("Break Time!", "Take a 1-minute break and relax!",parent=self.display)
+                    messagebox.showinfo("Break Time!", "Take a 5-minute break and relax!",parent=self.display)
                     self.break_mode = True
-                    self.seconds_left = 60  # starts the break timer, change to 5*60 later
+                    self.seconds_left = 5*60  # starts the break timer, change to 5*60 later
                     self.running = True
                     self.display.after(1000, self.update_display) # continue the loop
                 else: # return to work
                     self.break_mode = False
-                    self.seconds_left = 60 # will reset work time, change to 25*60 later
+                    self.seconds_left = 25*60 # will reset work time, change to 25*60 later
                     self.time_label.config(text="Back to Work!", font=("Courier", 32, "bold"))
                     self.status_label.config(text="Ready to Work!")
                     self.display.lift()
@@ -103,7 +111,7 @@ class PomodoroTimer:
     def reset(self):
         self.running = False
         self.break_mode = False # new cycle
-        self.seconds_left = 60 # change to 25*60 later
+        self.seconds_left = 25*60 # change to 25*60 later
         self.update_display() #update the screen
 def launch_timer():
     task_name = input("Hey! What are we working on today? ")
