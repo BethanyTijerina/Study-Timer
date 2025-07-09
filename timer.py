@@ -7,7 +7,7 @@ class PomodoroTimer:
         
     def work_time(self):
         print("Work Time!!")
-        self.countdown(1) # to run a 25 minute timer. change to 25 later
+        self.countdown(25) # to run a 25 minute timer. change to 25 later
         print("You did it! It's time for a break!")
         self.task.new_task()  # updates the counter for task by 1
         print(f"\nYou've completed {self.task.task_amount} session for {self.task.task_name}\n")
@@ -15,7 +15,7 @@ class PomodoroTimer:
          
     def break_time(self):
         print("Let's take a 5 minute break.")
-        self.countdown(1) #to run a 5 minute timer. change to 5 later
+        self.countdown(5) #to run a 5 minute timer. change to 5 later
         print("Break is over!! Let's get back to work!")
   
         
