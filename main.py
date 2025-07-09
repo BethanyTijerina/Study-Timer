@@ -19,6 +19,10 @@ def run_text_version():
     study_timer = PomodoroTimer(task)
     study_timer.start_session()
     print(f"\nYou've worked on {task.task_name}, {task.task_amount} time!")
+    if task.goal_reached()==True:
+        print("\nYou Completed Your Weekly Goal! Awesome!")
+    else: print(f"\n You Have {task.weekly_goal-task.task_amount} sessions left for {task.task_name}!")
+
 
 def run_twoD_version():
     from twoD_timer import launch_timer
