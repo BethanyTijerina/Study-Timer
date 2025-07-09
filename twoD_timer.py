@@ -2,11 +2,9 @@ import tkinter as tk #tkinter is used to create the pop up window for the timer
 from tkinter import messagebox #creates popup windows for when time is up
 import time  #time used for time functions
 from task import Task
-import winsound #creates a unique sound for the pop up window
-
 
 class PomodoroTimer: 
-    def __init__(self, display, task):
+    def __init__(self, display, task) :
         self.display = display
         self.task = task # this will link to task object
 
@@ -44,9 +42,11 @@ class PomodoroTimer:
         self.light3.pack(side="left", padx=4)
         
         #Creating text of the timer numbers and the start and stop buttons with the use of tkinter
-        self.time_label = tk.Label(self.clock_frame, text="25:00", font=("Courier",48, "bold"), fg="#39FF14", bg="#282c34") #"tk.label" is a tkinter widget that displays the text
+        self.time_label = tk.Label(self.clock_frame, text="Set Time", font=("Courier",48, "bold"), fg="#39FF14", bg="#282c34")
+        #self.time_label = tk.Label(self.clock_frame, text="25:00", font=("Courier",48, "bold"), fg="#39FF14", bg="#282c34") #"tk.label" is a tkinter widget that displays the text
         self.time_label.pack()  # ".pack()"" is used for Tkinter to know where and how to put your widgets. 
-        
+        self.time_label.bind("<Button-1>", self.make_time_editable)
+
         self.status_label = tk.Label(display, text="Ready to Work!", font=("Comic Sans MS", 14), bg="#FFFAF0")
         self.status_label.pack(pady=10)
 
@@ -59,8 +59,38 @@ class PomodoroTimer:
         self.stop_button.pack(side="left", padx=10)
         self.reset_button.pack(side="left", padx=10)
 
-        self.update_display() #Calls the update function
+        #self.update_display() #Calls the update function
  
+    def make_time_editable(self, event):
+        self.time_label.pack_forget()
+        self.edit_entry = tk.Entry(self.clock_frame, font=("Courier", 48, "bold"), justify="center", fg="#39FF14", bg="#282c34", bd=0)
+        self.edit_entry.insert(0, self.time_label.cget("text"))
+        self.edit_entry.pack()
+        self.edit_entry.focus()
+        self.edit_entry.bind("<Return>", self.set_time_from_entry)
+
+    def set_time_from_entry(self, event):
+        time_str = self.edit_entry.get()
+        try:
+            parts = list(map(int, time_str.split(":")))
+            if len(parts) == 2:
+                minutes, seconds = parts
+                total_seconds = minutes * 60 + seconds
+            elif len(parts) == 3:
+                hours, minutes, seconds = parts
+                total_seconds = hours * 3600 + minutes * 60 + seconds
+            else:
+                raise ValueError
+
+            self.seconds_left = total_seconds
+            self.edit_entry.destroy()
+            self.time_label.pack()
+            self.update_display()
+        except ValueError:
+            messagebox.showerror("Invalid Time", "Enter time as MM:SS or HH:MM:SS", parent=self.display)
+
+        self.update_display()  
+
     def update_display(self):
         # will convert remaining seconds to the MM:SS
         minutes = self.seconds_left // 60
@@ -81,7 +111,6 @@ class PomodoroTimer:
                     self.display.lift()
                     self.display.attributes("-topmost", True)
                     self.display.after_idle(self.display.attributes, "-topmost", False)
-                    winsound.PlaySound("SystemExclamation", winsound.SND_ALIAS)
                     messagebox.showinfo("Break Time!", "Take a 5-minute break and relax!",parent=self.display)
                     self.break_mode = True
                     self.seconds_left = 5*60  # starts the break timer, change to 5*60 later
@@ -89,13 +118,13 @@ class PomodoroTimer:
                     self.display.after(1000, self.update_display) # continue the loop
                 else: # return to work
                     self.break_mode = False
-                    self.seconds_left = 25*60 # will reset work time, change to 25*60 later
+
+                    #self.seconds_left = 25*60 # will reset work time, change to 25*60 later
                     self.time_label.config(text="Back to Work!", font=("Courier", 32, "bold"))
                     self.status_label.config(text="Ready to Work!")
                     self.display.lift()
                     self.display.attributes("-topmost", True)
                     self.display.after_idle(self.display.attributes, "-topmost", False)
-                    winsound.PlaySound("SystemExclamation", winsound.SND_ALIAS)
                     messagebox.showinfo("Back to Work!", "Break’s over! Time to focus again.",parent=self.display)
                     ####
             #Equation to update time, using time.time function (Displays the current time) minus the time the user pressed "start" 
@@ -111,7 +140,8 @@ class PomodoroTimer:
     def reset(self):
         self.running = False
         self.break_mode = False # new cycle
-        self.seconds_left = 25*60 # change to 25*60 later
+        self.seconds_left = self.user_time  # reset to user-set time
+        #self.seconds_left = 25*60 # change to 25*60 later
         self.update_display() #update the screen
 def launch_timer():
     task_name = input("Hey! What are we working on today? ")
@@ -123,7 +153,8 @@ def launch_timer():
             break
         except ValueError:
             print("Please enter a valid number.")
-            
+    
+        
     task = Task(task_name,due,goal)
 
     print(f"Let's get started on: {task.task_name} Due Date: {task.due_date} Weekly Goal: {task.weekly_goal}") #AM: Added due date string variable mm/dd/yyyy
