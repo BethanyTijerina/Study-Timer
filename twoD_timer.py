@@ -3,6 +3,8 @@ from tkinter import messagebox #creates popup windows for when time is up
 import time  #time used for time functions
 from task import Task
 import winsound #creates a unique sound for the pop up window
+from tkinter import simpledialog
+from tkinter import ttk
 
 
 class PomodoroTimer: 
@@ -79,8 +81,8 @@ class PomodoroTimer:
                     self.time_label.config(text="Break Time!", font=("Courier", 38, "bold"))
                     self.status_label.config(text="Break Time!")
                     self.display.lift()
-                    self.display.attributes("-topmost", True)
-                    self.display.after_idle(self.display.attributes, "-topmost", False)
+                    self.display.attributes("-topmost", 1) # always on top
+                    self.display.focus_force()
                     winsound.PlaySound("SystemExclamation", winsound.SND_ALIAS)
                     messagebox.showinfo("Break Time!", "Take a 5-minute break and relax!",parent=self.display)
                     self.break_mode = True
@@ -93,8 +95,8 @@ class PomodoroTimer:
                     self.time_label.config(text="Back to Work!", font=("Courier", 32, "bold"))
                     self.status_label.config(text="Ready to Work!")
                     self.display.lift()
-                    self.display.attributes("-topmost", True)
-                    self.display.after_idle(self.display.attributes, "-topmost", False)
+                    self.display.attributes("-topmost", 1) # always on top
+                    self.display.focus_force()
                     winsound.PlaySound("SystemExclamation", winsound.SND_ALIAS)
                     messagebox.showinfo("Back to Work!", "Break’s over! Time to focus again.",parent=self.display)
                     ####
@@ -114,23 +116,57 @@ class PomodoroTimer:
         self.seconds_left = 25*60 # change to 25*60 later
         self.update_display() #update the screen
 def launch_timer():
-    task_name = input("Hey! What are we working on today? ")
-    due=input('When is it due? ')
+    root_form = tk.Tk()
+    root_form.withdraw() # hid the small root window
+    task_name = simpledialog.askstring("Task Name", "Hey! What are we working on today? ")
+    if not task_name:
+        return
     
+    due=simpledialog.askstring("Due Date", "When is it due? (MM/DD/YYYY)")
+    if not due:
+        return
     while True:
         try:
-            goal = int(input("How many Pomodoro sections for this task? "))
+            goal = simpledialog.askinteger("Weekly Goal", "How many Pomodoro sections for this task? ")
+            if goal is None:
+                return
             break
         except ValueError:
-            print("Please enter a valid number.")
+            messagebox.showerror("Invalid Input", "Please enter a valid number.")
             
     task = Task(task_name,due,goal)
 
-    print(f"Let's get started on: {task.task_name} Due Date: {task.due_date} Weekly Goal: {task.weekly_goal}") #AM: Added due date string variable mm/dd/yyyy
-    
+    messagebox.showinfo("Task Info", f"Let's get started on:\n{task.task_name}\nDue Date: {task.due_date}\nWeekly Goal: {task.weekly_goal}") #AM: Added due date string variable mm/dd/yyyy
+    def on_closing():
+        root.destroy()
+        progress_bar(task)
     root = tk.Tk()  # Create the main tkinter window
     program = PomodoroTimer(root, task)  # Creates an instance (object) of the Timer class
+    root.protocol("WM_DELETE_WINDOW", on_closing)
     root.mainloop() # Keeps output window display and running
-    print(f"\nYou completed {task.task_amount} Pomodoro sessions for {task.task_name}")
+    messagebox.showinfo("Progress Summary",f"You completed {task.task_amount} Pomodoro sessions for {task.task_name}. \nWeek Goal: {task.weekly_goal}")
+
+
+def progress_bar(task):
+    progress = tk.Tk()
+    progress.title("Pomodoro Progress")
+    progress.geometry("350x150")
+    progress.configure(bg="#FFFAF0")
+    
+    label = tk.Label(progress, text=f"{task.task_name} Progress", font=("Arial", 12, "bold"), bg="#FFFAF0")
+    label.pack(pady=10)
+    progress_tk = ttk.Progressbar(progress, length=250, mode='determinate')
+    progress_tk.pack(pady=10)
+    
+    max_value = task.weekly_goal
+    current_value = min(task.task_amount, max_value)
+    progress_tk["maximum"]= max_value
+    progress_tk["value"] = current_value
+    
+    percentage = (current_value / max_value)*100 if max_value else 0
+    sum = tk.Label(progress, text=f"{current_value}/{max_value} Pomodoros complete ({percentage:.1f}%)", bg="#FFFAF0")
+    sum.pack(pady=5)
+    progress.mainloop()
+
 if __name__ == "__main__":
     launch_timer()
